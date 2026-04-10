@@ -1,6 +1,7 @@
 node_modules
 dist
-lib
+# Compiled Cloud Functions only (do not ignore client/src/lib)
+functions/lib
 .env
 .env.local
 .firebase
