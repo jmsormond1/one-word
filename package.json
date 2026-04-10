@@ -1,5 +1,5 @@
 {
-  "name": "one-word",
+  "name": "what-happens-next",
   "private": true,
   "scripts": {
     "build:client": "npm run build --prefix client",

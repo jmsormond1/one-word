@@ -26,7 +26,7 @@ export function bindProposals(
       onData(rows);
     },
     (err) => {
-      console.error('[OneWord] proposals listener failed:', err);
+      console.error('[WhatHappensNext] proposals listener failed:', err);
       onData([]);
     },
   );

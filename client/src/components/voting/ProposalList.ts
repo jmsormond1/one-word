@@ -11,13 +11,13 @@ export function createProposalList(db: Database, host: HTMLElement): {
 
   const title = document.createElement('h3');
   title.className = 'proposals-section__title';
-  title.textContent = 'Submitted words';
+  title.textContent = 'Suggestions';
   section.appendChild(title);
 
   const hint = document.createElement('p');
   hint.className = 'proposals-section__hint';
   hint.textContent =
-    'Sorted by votes — highest at the top. Vote on as many words as you want.';
+    'Sorted by votes — highest at the top. Vote on as many suggestions as you want.';
   section.appendChild(hint);
 
   const headerRow = document.createElement('div');
@@ -28,7 +28,7 @@ export function createProposalList(db: Database, host: HTMLElement): {
   hRank.textContent = '#';
   const hWord = document.createElement('span');
   hWord.className = 'proposals-section__col proposals-section__col--word';
-  hWord.textContent = 'Word';
+  hWord.textContent = 'Idea';
   const hVotes = document.createElement('span');
   hVotes.className = 'proposals-section__col proposals-section__col--votes';
   hVotes.textContent = 'Votes';
@@ -47,7 +47,7 @@ export function createProposalList(db: Database, host: HTMLElement): {
 
   const empty = document.createElement('p');
   empty.className = 'proposals-section__empty';
-  empty.textContent = 'No words yet — be the first to suggest the next one.';
+  empty.textContent = 'No suggestions yet — be the first to shape what happens next.';
   empty.hidden = true;
   scroll.appendChild(empty);
 

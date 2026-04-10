@@ -1,9 +1,10 @@
 import { getRtdb } from '../lib/rtdb.js';
-import { appendWordToStory, pickWinner } from '../lib/pickWinner.js';
+import { appendParagraphToStory, pickWinner } from '../lib/pickWinner.js';
+import { resolveNextParagraph } from '../lib/generateStoryParagraph.js';
 
 const ROUND_MS = 60_000;
 
-export async function runFinalizeWordRound(): Promise<void> {
+export async function runFinalizeWordRound(getOpenAiApiKey: () => string): Promise<void> {
   const db = getRtdb();
   const root = await db.ref().get();
 
@@ -27,7 +28,8 @@ export async function runFinalizeWordRound(): Promise<void> {
     return;
   }
 
-  const newStory = appendWordToStory(storyVal, winner.text);
+  const paragraph = await resolveNextParagraph(getOpenAiApiKey, storyVal, winner.text);
+  const newStory = appendParagraphToStory(storyVal, paragraph);
   const updates: Record<string, unknown> = {
     story: newStory,
     'round/id': roundId + 1,

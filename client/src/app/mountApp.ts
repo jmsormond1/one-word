@@ -1,5 +1,6 @@
 import { createCountdown } from '../components/layout/Countdown';
 import { createPanelSection } from '../components/layout/PanelSection';
+import { createSiteHeader } from '../components/layout/SiteHeader';
 import { createArchiveDateList } from '../components/story/ArchiveDateList';
 import { createStoryDisplay } from '../components/story/StoryDisplay';
 import { createStoryModeLabel } from '../components/story/StoryModeLabel';
@@ -11,13 +12,15 @@ import { bindArchive } from '../lib/subscriptions/bindArchive';
 import { bindLiveStory } from '../lib/subscriptions/bindStory';
 import { bindProposals, type ProposalRow } from '../lib/subscriptions/bindProposals';
 import { bindRound, type RoundState } from '../lib/subscriptions/bindRound';
-import { validateWordInput } from '../lib/validation/wordSubmission';
+import { validateProposalInput } from '../lib/validation/wordSubmission';
 
-export function mountOneWordApp(root: HTMLElement): void {
+export function mountApp(root: HTMLElement): void {
   let db;
   try {
     db = getDb();
   } catch (err) {
+    root.className = 'app-root';
+    root.appendChild(createSiteHeader());
     const p = document.createElement('p');
     p.className = 'env-error';
     p.textContent =
@@ -26,7 +29,9 @@ export function mountOneWordApp(root: HTMLElement): void {
     return;
   }
 
-  root.className = 'one-word-root';
+  root.className = 'app-root';
+
+  root.appendChild(createSiteHeader());
 
   const layout = document.createElement('div');
   layout.className = 'app-layout';
@@ -38,7 +43,12 @@ export function mountOneWordApp(root: HTMLElement): void {
   right.className = 'app-layout__vote';
   layout.append(left, right);
 
-  const storyPanel = createPanelSection({ title: 'Story', className: 'panel story-panel' });
+  const storyPanel = createPanelSection({
+    title: "Today's story",
+    className: 'panel story-panel',
+    intro:
+      "This is the story so far today—new paragraphs are added each round from the crowd's top-voted idea. At midnight Pacific time, it's saved to the archive below and a new day begins.",
+  });
   left.appendChild(storyPanel.root);
 
   const modeHost = document.createElement('div');
@@ -83,11 +93,16 @@ export function mountOneWordApp(root: HTMLElement): void {
     }
   }
 
-  const votePanel = createPanelSection({ title: 'Next word', className: 'panel vote-panel' });
+  const votePanel = createPanelSection({
+    title: 'Suggest & vote',
+    className: 'panel vote-panel',
+    intro:
+      "Suggest what should happen next (up to 100 characters) and vote for ideas you like—you can do both as much as you like. Each round, the top-voted idea is turned into the next story paragraph.",
+  });
   right.appendChild(votePanel.root);
 
   const countdownHost = document.createElement('div');
-  countdownHost.className = 'countdown-row';
+  countdownHost.className = 'countdown-host';
   votePanel.body.appendChild(countdownHost);
   const countdown = createCountdown(countdownHost);
 
@@ -102,19 +117,19 @@ export function mountOneWordApp(root: HTMLElement): void {
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
   submitBtn.className = 'word-form__submit';
-  submitBtn.textContent = 'Submit word';
+  submitBtn.textContent = 'Submit idea';
   form.appendChild(submitBtn);
 
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
-    const result = validateWordInput(wordUi.input.value);
+    const result = validateProposalInput(wordUi.input.value);
     if (!result.ok) {
       wordUi.setError(result.message);
       return;
     }
     wordUi.setError(null);
     try {
-      await submitProposal(db, result.word);
+      await submitProposal(db, result.text);
       wordUi.clear();
     } catch {
       wordUi.setError('Could not submit. Try again.');

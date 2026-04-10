@@ -1,6 +1,6 @@
-# One Word
+# What Happens Next?
 
-Crowd-sourced story: every minute the highest-voted proposed word is appended to today’s story. At midnight **America/Los_Angeles**, the live story is archived under that calendar day and the board resets.
+Crowd-sourced story: each round, users submit short ideas (up to 100 characters) and vote. The **highest-voted idea** is sent to **OpenAI** (`gpt-4o-mini`), which writes the **next paragraph** of the story. That paragraph is appended to today’s live story (not the raw vote text). At midnight **America/Los_Angeles**, the live story is archived under that calendar day and the board resets.
 
 - **Client:** Vite + TypeScript, deployed on **Netlify**
 - **Backend:** Firebase **Realtime Database** + **Cloud Functions** (scheduled)
@@ -8,7 +8,7 @@ Crowd-sourced story: every minute the highest-voted proposed word is appended to
 ## Repository layout
 
 - [`client/`](client/) — web UI (split story / voting panes, archive browser)
-- [`functions/`](functions/) — `finalizeWordRound` (every 1 minute), `archiveDailyStory` (cron midnight LA)
+- [`functions/`](functions/) — `finalizeWordRound` (every 1 minute: pick winner → LLM paragraph → update story), `archiveDailyStory` (cron midnight LA)
 - [`database.rules.json`](database.rules.json) — RTDB security rules
 - [`firebase.json`](firebase.json) — deploy rules + functions (no Firebase Hosting)
 - [`netlify.toml`](netlify.toml) — Netlify build from `client/`
@@ -18,13 +18,27 @@ Crowd-sourced story: every minute the highest-voted proposed word is appended to
 1. Create a Firebase project and enable **Realtime Database** (start in locked mode, then deploy rules).
 2. The repo’s [`.firebaserc`](.firebaserc) default project is **`oneword-f9a91`**. Change it with `firebase use --add` if you use another project.
 3. Install CLI: `npm install -g firebase-tools` and `firebase login`.
-4. Deploy rules and functions:
+4. **LLM (required for generated paragraphs):** create an [OpenAI API key](https://platform.openai.com/api-keys) and store it as a function secret named **`OPENAI_API_KEY`**:
+
+   ```bash
+   firebase functions:secrets:set OPENAI_API_KEY
+   ```
+
+   Paste the key when prompted. After changing secrets, redeploy functions so new instances pick up the value:
+
+   ```bash
+   firebase deploy --only functions
+   ```
+
+   If the secret is missing or the API fails twice (with a 20s timeout per attempt), the function **appends the raw winning suggestion** as a fallback so the round still completes.
+
+5. Deploy rules and functions:
 
    ```bash
    firebase deploy --only database,functions
    ```
 
-5. **Billing:** Cloud Functions with scheduled triggers require a **Blaze** plan.
+6. **Billing:** Cloud Functions with scheduled triggers require a **Blaze** plan.
 
 ### Authorized domains
 
@@ -60,7 +74,7 @@ cd functions && npm run build
 firebase emulators:start --only functions,database
 ```
 
-Point `VITE_FIREBASE_DATABASE_URL` at the emulator when testing (see Firebase docs for `connectDatabaseEmulator` if you wire that in later).
+For scheduled functions with secrets, configure emulator access per [Firebase docs](https://firebase.google.com/docs/functions/config-env#emulator) (or rely on the fallback path when `OPENAI_API_KEY` is unavailable). Point `VITE_FIREBASE_DATABASE_URL` at the emulator when testing (see Firebase docs for `connectDatabaseEmulator` if you wire that in later).
 
 ## Initial database state
 

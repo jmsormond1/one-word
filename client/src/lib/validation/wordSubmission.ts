@@ -1,17 +1,17 @@
-const MAX_LEN = 20;
+const MAX_LEN = 100;
 
-export type WordValidation = { ok: true; word: string } | { ok: false; message: string };
+export type ProposalValidation =
+  | { ok: true; text: string }
+  | { ok: false; message: string };
 
-export function validateWordInput(raw: string): WordValidation {
-  const word = raw.trim();
-  if (word.length === 0) {
-    return { ok: false, message: 'Enter a word.' };
+export function validateProposalInput(raw: string): ProposalValidation {
+  const text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const singleLine = text.replace(/\n/g, ' ').trim();
+  if (singleLine.length === 0) {
+    return { ok: false, message: 'Enter your idea.' };
   }
-  if (word.length > MAX_LEN) {
+  if (singleLine.length > MAX_LEN) {
     return { ok: false, message: `Max ${MAX_LEN} characters.` };
   }
-  if (/\s/.test(word)) {
-    return { ok: false, message: 'One word only — no spaces.' };
-  }
-  return { ok: true, word };
+  return { ok: true, text: singleLine };
 }

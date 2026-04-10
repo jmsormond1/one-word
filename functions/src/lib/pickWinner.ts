@@ -27,10 +27,14 @@ export function pickWinner(
   return { id: winnerId, text: proposals[winnerId].text };
 }
 
-export function appendWordToStory(current: string | null, word: string): string {
+export function appendParagraphToStory(current: string | null, paragraph: string): string {
+  const p = paragraph.trim();
+  if (p === '') {
+    return current ?? '';
+  }
   const base = current ?? '';
   if (base === '') {
-    return word;
+    return p;
   }
-  return `${base} ${word}`;
+  return `${base}\n\n${p}`;
 }

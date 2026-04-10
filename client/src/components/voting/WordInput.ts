@@ -1,5 +1,5 @@
 export function createWordInput(host: HTMLElement): {
-  input: HTMLInputElement;
+  input: HTMLTextAreaElement;
   error: HTMLElement;
   setError: (msg: string | null) => void;
   clear: () => void;
@@ -7,13 +7,13 @@ export function createWordInput(host: HTMLElement): {
   const field = document.createElement('div');
   field.className = 'word-input';
 
-  const input = document.createElement('input');
-  input.type = 'text';
+  const input = document.createElement('textarea');
   input.className = 'word-input__field';
   input.autocomplete = 'off';
-  input.maxLength = 20;
-  input.placeholder = 'One word (no spaces)';
-  input.setAttribute('aria-label', 'Word to submit');
+  input.maxLength = 100;
+  input.rows = 3;
+  input.placeholder = 'What should happen next? (up to 100 characters)';
+  input.setAttribute('aria-label', 'Suggestion for the next part of the story');
 
   const error = document.createElement('p');
   error.className = 'word-input__error';
