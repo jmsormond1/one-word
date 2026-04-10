@@ -1,4 +1,4 @@
-import { mountOneWordApp } from './app/mountOneWordApp.js';
+import { mountOneWordApp } from './app/mountOneWordApp';
 import './styles/globals.css';
 import './styles/layout.css';
 import './styles/components.css';

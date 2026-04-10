@@ -1,17 +1,17 @@
-import { createCountdown } from '../components/layout/Countdown.js';
-import { createPanelSection } from '../components/layout/PanelSection.js';
-import { createArchiveDateList } from '../components/story/ArchiveDateList.js';
-import { createStoryDisplay } from '../components/story/StoryDisplay.js';
-import { createStoryModeLabel } from '../components/story/StoryModeLabel.js';
-import { createProposalList } from '../components/voting/ProposalList.js';
-import { submitProposal } from '../components/voting/ProposalItem.js';
-import { createWordInput } from '../components/voting/WordInput.js';
-import { getDb } from '../lib/firebase/init.js';
-import { bindArchive } from '../lib/subscriptions/bindArchive.js';
-import { bindLiveStory } from '../lib/subscriptions/bindStory.js';
-import { bindProposals } from '../lib/subscriptions/bindProposals.js';
-import { bindRound } from '../lib/subscriptions/bindRound.js';
-import { validateWordInput } from '../lib/validation/wordSubmission.js';
+import { createCountdown } from '../components/layout/Countdown';
+import { createPanelSection } from '../components/layout/PanelSection';
+import { createArchiveDateList } from '../components/story/ArchiveDateList';
+import { createStoryDisplay } from '../components/story/StoryDisplay';
+import { createStoryModeLabel } from '../components/story/StoryModeLabel';
+import { createProposalList } from '../components/voting/ProposalList';
+import { submitProposal } from '../components/voting/ProposalItem';
+import { createWordInput } from '../components/voting/WordInput';
+import { getDb } from '../lib/firebase/init';
+import { bindArchive } from '../lib/subscriptions/bindArchive';
+import { bindLiveStory } from '../lib/subscriptions/bindStory';
+import { bindProposals, type ProposalRow } from '../lib/subscriptions/bindProposals';
+import { bindRound, type RoundState } from '../lib/subscriptions/bindRound';
+import { validateWordInput } from '../lib/validation/wordSubmission';
 
 export function mountOneWordApp(root: HTMLElement): void {
   let db;
@@ -128,14 +128,14 @@ export function mountOneWordApp(root: HTMLElement): void {
   const unsubs: Array<() => void> = [];
 
   unsubs.push(
-    bindLiveStory(db, (text) => {
+    bindLiveStory(db, (text: string) => {
       liveStory = text;
       syncStoryView();
     }),
   );
 
   unsubs.push(
-    bindArchive(db, (entries) => {
+    bindArchive(db, (entries: Record<string, string>) => {
       archive = entries;
       archiveUi.setDates(sortedArchiveDates());
       syncStoryView();
@@ -143,13 +143,13 @@ export function mountOneWordApp(root: HTMLElement): void {
   );
 
   unsubs.push(
-    bindRound(db, (round) => {
+    bindRound(db, (round: RoundState) => {
       countdown.setEndsAt(round.endsAt);
     }),
   );
 
   unsubs.push(
-    bindProposals(db, (rows) => {
+    bindProposals(db, (rows: ProposalRow[]) => {
       proposalList.render(rows);
     }),
   );

@@ -1,7 +1,7 @@
 import { push, ref, runTransaction } from 'firebase/database';
 import type { Database } from 'firebase/database';
-import { RTDB_PATHS } from '../../lib/firebase/paths.js';
-import type { ProposalRow } from '../../lib/subscriptions/bindProposals.js';
+import { RTDB_PATHS } from '../../lib/firebase/paths';
+import type { ProposalRow } from '../../lib/subscriptions/bindProposals';
 
 export function mountProposalItem(
   db: Database,

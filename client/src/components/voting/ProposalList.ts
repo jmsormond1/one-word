@@ -1,6 +1,6 @@
 import type { Database } from 'firebase/database';
-import type { ProposalRow } from '../../lib/subscriptions/bindProposals.js';
-import { mountProposalItem } from './ProposalItem.js';
+import type { ProposalRow } from '../../lib/subscriptions/bindProposals';
+import { mountProposalItem } from './ProposalItem';
 
 export function createProposalList(db: Database, host: HTMLElement): {
   render: (rows: ProposalRow[]) => void;
