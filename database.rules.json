@@ -1,0 +1,31 @@
+{
+  "rules": {
+    "story": {
+      ".read": true,
+      ".write": false
+    },
+    "archive": {
+      ".read": true,
+      "$date": {
+        ".write": false
+      }
+    },
+    "meta": {
+      ".read": true,
+      ".write": false
+    },
+    "round": {
+      ".read": true,
+      ".write": false
+    },
+    "proposals": {
+      ".read": true,
+      ".write": false,
+      "$id": {
+        ".read": true,
+        ".write": "newData.exists() && newData.hasChildren(['text', 'votes']) && newData.child('text').isString() && newData.child('votes').isNumber()",
+        ".validate": "(!data.exists() && newData.child('votes').val() == 0 && newData.child('text').val().length > 0 && newData.child('text').val().length <= 20 && !newData.child('text').val().matches(/.*\\s.*/)) || (data.exists() && newData.child('text').val() == data.child('text').val() && newData.child('votes').val() == data.child('votes').val() + 1)"
+      }
+    }
+  }
+}

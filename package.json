@@ -1,0 +1,8 @@
+{
+  "name": "one-word",
+  "private": true,
+  "scripts": {
+    "build:client": "npm run build --prefix client",
+    "build:functions": "npm run build --prefix functions"
+  }
+}
